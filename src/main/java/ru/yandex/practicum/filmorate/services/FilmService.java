@@ -6,6 +6,10 @@ import java.util.List;
 
 public interface FilmService {
     Film addedFilm(Film film);
+
+
     List<Film> getFilms();
+
+
     Film updateFilm(Film film);
 }
