@@ -7,11 +7,12 @@ import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.ValidException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.services.FilmManage;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
-public class FilmTest  extends FilmorateApplicationTests{
+public class FilmTest extends FilmorateApplicationTests {
     private static FilmController filmController;
     private static Film film;
     private static Film film1;
@@ -22,7 +23,7 @@ public class FilmTest  extends FilmorateApplicationTests{
     }
 
     @BeforeEach
-    void BeforeEach() {
+    void beforeEach() {
         film = Film.builder()
                 .name("The Lion King")
                 .description("Animated musical drama film")
