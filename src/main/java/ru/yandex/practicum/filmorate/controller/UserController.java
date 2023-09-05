@@ -18,6 +18,7 @@ public class UserController {
 
     @PostMapping
     public User addNewUser(@Valid @RequestBody User user) {
+        log.info("Added new user: {}", user);
         return userService.newUser(user);
     }
 
@@ -28,6 +29,7 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
+        log.info("Update user: {}", user);
         return userService.updateUser(user);
     }
 }
