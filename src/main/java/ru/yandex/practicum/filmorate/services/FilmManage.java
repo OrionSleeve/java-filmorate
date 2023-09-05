@@ -45,7 +45,7 @@ public class FilmManage implements FilmService {
     }
 
     private int generatorId() {
-        return id++;
+        return ++id;
     }
 
     private void validFilm(Film film) {

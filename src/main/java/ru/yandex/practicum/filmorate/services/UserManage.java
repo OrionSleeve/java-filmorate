@@ -43,7 +43,7 @@ public class UserManage implements UserService {
     }
 
     private int generatorUserId() {
-        return id++;
+        return ++id;
     }
 
     private void validUser(User user) {
