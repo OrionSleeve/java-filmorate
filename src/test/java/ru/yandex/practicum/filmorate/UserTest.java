@@ -58,7 +58,7 @@ public class UserTest extends FilmorateApplicationTests {
     @Test
     void idTest() {
         User testUser = userController.addNewUser(user);
-        testUser.setId(1);
+        testUser.setId(0);
         Exception exception = assertThrows(ValidException.class, () -> userController.updateUser(user));
         assertEquals("User not found", exception.getMessage());
     }
