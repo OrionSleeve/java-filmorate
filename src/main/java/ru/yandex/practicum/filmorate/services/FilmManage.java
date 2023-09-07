@@ -21,7 +21,6 @@ public class FilmManage implements FilmService {
 
     @Override
     public Film addedFilm(Film film) {
-        validFilm(film);
         film.setId(generatorId());
         films.put(film.getId(), film);
         return film;
@@ -35,7 +34,6 @@ public class FilmManage implements FilmService {
     @Override
     public Film updateFilm(Film film) {
         if (films.containsKey(film.getId())) {
-            validFilm(film);
             films.put(film.getId(), film);
         } else {
             log.error("Error: invalid id - film not found");
@@ -46,24 +44,5 @@ public class FilmManage implements FilmService {
 
     private int generatorId() {
         return ++id;
-    }
-
-    private void validFilm(Film film) {
-        if (film.getName() == null || film.getName().isEmpty()) {
-            log.error("ERROR: Field <name> cannot be empty");
-            throw new ValidException("Name cannot be empty");
-        }
-        if (film.getDescription().length() > 200) {
-            log.error("ERROR: Field <description> should not contain more than 200 characters");
-            throw new ValidException("Maximum description length 200 characters");
-        }
-        if (film.getReleaseDate().isBefore(DATE)) {
-            log.error("ERROR: Field <releaseDate> invalid");
-            throw new ValidException("Release date cannot be earlier " + DATE);
-        }
-        if (film.getDuration() < 0) {
-            log.error("ERROR: Field <duration> must not be negative");
-            throw new ValidException("Duration must not be negative");
-        }
     }
 }
