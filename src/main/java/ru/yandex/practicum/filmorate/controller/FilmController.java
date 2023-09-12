@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class FilmController {
-    private FilmService filmService;
+    private final FilmService filmService;
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {

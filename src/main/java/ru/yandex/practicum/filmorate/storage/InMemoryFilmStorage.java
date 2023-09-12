@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -32,7 +34,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             films.put(film.getId(), film);
         } else {
             log.error("Error: invalid id - film not found");
-            throw new ValidException("NOT FOUND FILM ID");
+            throw new NotFoundException("NOT FOUND FILM ID");
         }
         return film;
     }

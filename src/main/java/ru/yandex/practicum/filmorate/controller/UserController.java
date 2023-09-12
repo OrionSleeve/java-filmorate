@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping
     public User addNewUser(@Valid @RequestBody User user) {
