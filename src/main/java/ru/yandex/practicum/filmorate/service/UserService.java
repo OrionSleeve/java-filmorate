@@ -22,11 +22,13 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        validUser(user);
         log.info("New user with id = {} created ", user.getId());
         return userStorage.newUser(user);
     }
 
     public User updateUser(User user) {
+        validUser(user);
         log.info("User with id = {} {} ", user.getId(), "has been updated");
         return userStorage.updateUser(user);
     }
@@ -80,6 +82,12 @@ public class UserService {
         List<User> friends = getAllFriends(userId);
         friends.retainAll(getAllFriends(friendId));
         return friends;
+    }
+
+    public void validUser(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
     }
 
 }

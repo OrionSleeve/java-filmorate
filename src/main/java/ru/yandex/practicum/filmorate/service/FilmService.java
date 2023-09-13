@@ -70,7 +70,7 @@ public class FilmService {
 
     public List<Film> favoriteFilms(Integer number) {
         return filmStorage.getFilms().stream()
-                .sorted(Collections.reverseOrder(Comparator.comparingInt(film -> film.getLikes().size())))
+                .sorted(Collections.reverseOrder(Comparator.comparingInt(Film::getCountLikes)))
                 .limit(number)
                 .collect(Collectors.toList());
     }

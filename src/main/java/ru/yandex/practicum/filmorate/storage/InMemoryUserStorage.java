@@ -16,7 +16,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User newUser(User user) {
-        validUser(user);
         user.setId(generatorUserId());
         userMap.put(user.getId(), user);
         return user;
@@ -25,7 +24,6 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User updateUser(User user) {
         if (userMap.containsKey(user.getId())) {
-            validUser(user);
             userMap.put(user.getId(), user);
             return user;
         } else {
@@ -46,11 +44,5 @@ public class InMemoryUserStorage implements UserStorage {
 
     private long generatorUserId() {
         return ++id;
-    }
-
-    public void validUser(User user) {
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
     }
 }
