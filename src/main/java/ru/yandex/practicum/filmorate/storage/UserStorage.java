@@ -1,10 +1,11 @@
-package ru.yandex.practicum.filmorate.services;
+package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface UserService {
+public interface UserStorage {
     User newUser(User user);
 
 
@@ -12,4 +13,6 @@ public interface UserService {
 
 
     List<User> getUsers();
+
+    Optional<User> getUserById(Long id);
 }
