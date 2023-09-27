@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GenreService {
     private final GenreStorage genreStorage;
+
     public List<Genre> getAllGenres() {
         return genreStorage.getAllGenres();
     }
