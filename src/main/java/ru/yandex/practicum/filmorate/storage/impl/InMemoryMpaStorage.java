@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InMemoryMpaStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
+
     @Override
     public Mpa getMpaById(int id) {
         this.isMpaExisted(id);
