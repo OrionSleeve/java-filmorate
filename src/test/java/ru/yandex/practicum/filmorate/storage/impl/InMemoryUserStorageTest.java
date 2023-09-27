@@ -73,7 +73,7 @@ class InMemoryUserStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("email: не должно быть пустым", exception.getMessage());
+        Assertions.assertEquals("email: must not be blank", exception.getMessage());
     }
 
     @Test
@@ -85,7 +85,7 @@ class InMemoryUserStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("email: должно иметь формат адреса электронной почты", exception.getMessage());
+        Assertions.assertEquals("email: must be a well-formed email address", exception.getMessage());
     }
 
     @Test
@@ -97,7 +97,7 @@ class InMemoryUserStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("birthday: не должно равняться null", exception.getMessage());
+        Assertions.assertEquals("birthday: must not be null", exception.getMessage());
     }
 
     @Test
@@ -109,7 +109,7 @@ class InMemoryUserStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("birthday: должно содержать прошедшую дату или сегодняшнее число", exception.getMessage());
+        Assertions.assertEquals("birthday: must be a date in the past or in the present", exception.getMessage());
     }
 
     @Test
@@ -138,7 +138,7 @@ class InMemoryUserStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("email: не должно быть пустым", exception.getMessage());
+        Assertions.assertEquals("email: must not be blank", exception.getMessage());
     }
 
     @Test
@@ -151,7 +151,7 @@ class InMemoryUserStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("email: должно иметь формат адреса электронной почты", exception.getMessage());
+        Assertions.assertEquals("email: must be a well-formed email address", exception.getMessage());
     }
 
     @Test
@@ -164,7 +164,7 @@ class InMemoryUserStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("login: не должно быть пустым",
+        Assertions.assertEquals("login: must not be blank",
                 exception.getMessage());
     }
 
@@ -186,6 +186,6 @@ class InMemoryUserStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("birthday: должно содержать прошедшую дату или сегодняшнее число", exception.getMessage());
+        Assertions.assertEquals("birthday: must be a date in the past or in the present", exception.getMessage());
     }
 }

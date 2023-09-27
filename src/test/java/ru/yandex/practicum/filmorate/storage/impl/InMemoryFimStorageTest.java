@@ -75,7 +75,7 @@ class InMemoryFimStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("name: не должно быть пустым", exception.getMessage());
+        Assertions.assertEquals("name: must not be blank", exception.getMessage());
     }
 
     @Test
@@ -87,7 +87,7 @@ class InMemoryFimStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("description: не должно быть пустым", exception.getMessage());
+        Assertions.assertEquals("description: must not be blank", exception.getMessage());
     }
 
     @Test
@@ -102,7 +102,7 @@ class InMemoryFimStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("description: размер должен находиться в диапазоне от 0 до 200",
+        Assertions.assertEquals("description: size must be between 0 and 200",
                 exception.getMessage());
     }
 
@@ -127,7 +127,7 @@ class InMemoryFimStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("duration: не должно равняться null", exception.getMessage());
+        Assertions.assertEquals("duration: must not be null", exception.getMessage());
     }
 
     @Test
@@ -139,7 +139,7 @@ class InMemoryFimStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("duration: должно быть больше 0", exception.getMessage());
+        Assertions.assertEquals("duration: must be greater than 0", exception.getMessage());
     }
 
     @Test
@@ -165,6 +165,6 @@ class InMemoryFimStorageTest {
                 throw new ConstraintViolationException(violations);
             }
         });
-        Assertions.assertEquals("name: не должно быть пустым", exception.getMessage());
+        Assertions.assertEquals("name: must not be blank", exception.getMessage());
     }
 }
