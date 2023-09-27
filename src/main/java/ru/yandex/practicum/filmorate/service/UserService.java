@@ -1,25 +1,20 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
-
-    @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
+    private final FriendStorage friendStorage;
 
     public User createUser(User user) {
         validUser(user);
@@ -29,6 +24,7 @@ public class UserService {
 
     public User updateUser(User user) {
         validUser(user);
+        userStorage.isUserExisted(user.getId());
         log.info("User with id = {} {} ", user.getId(), "has been updated");
         return userStorage.updateUser(user);
     }
@@ -38,49 +34,36 @@ public class UserService {
         return userStorage.getUsers();
     }
 
-    public User getUserById(long id) {
+    public User getUserById(int id) {
+        userStorage.isUserExisted(id);
+        User user = userStorage.getUserById(id);
         log.info("get user with id = {} ", id);
-        Optional<User> user = userStorage.getUserById(id);
-        if (user.isPresent()) {
-            log.info("get user with id = {} ", id);
-            return user.get();
-        } else {
-            throw new NotFoundException("user with id = " + id + "not found");
-        }
+        return user;
     }
 
-    public void addFriend(Long id, Long friendId) {
-        User user = getUserById(id);
-        if (user.getFriends().contains(friendId)) {
-            log.info("friend with id = {} {} {}", friendId, " has been friend of the user with id = {}", id);
-            throw new NotFoundException("User " + id + " and the user " + friendId + " have been friends yet");
-        }
-        User friend = getUserById(friendId);
-        user.getFriends().add(friendId);
-        friend.getFriends().add(id);
-
+    public void addFriend(int id, int friendId) {
+        userStorage.isUserExisted(id);
+        userStorage.isUserExisted(friendId);
+        friendStorage.addAsFriend(id, friendId);
         log.info("The friend with id = {} {} {}", friendId, " has been added to the user with id = ", id);
         log.info("The friend with id = {} {} {}", id, " has been added to the user with id = ", friendId);
     }
 
-    public void removeFriendById(long id, Long friendId) {
+    public void removeFriendById(int id, int friendId) {
         User user = getUserById(id);
         log.info("friend with id = {}{}{}", friendId, " has been removed to the user with id = ", id);
-        user.getFriends().remove(friendId);
+        friendStorage.deleteFriend(id, friendId);
     }
 
-    public List<User> getAllFriends(long id) {
+    public List<User> getAllFriends(int id) {
+        List<User> friends = friendStorage.getAllFriends(id);
         log.info("get all friends");
-        return getUserById(id).getFriends()
-                .stream()
-                .map(this::getUserById)
-                .collect(Collectors.toList());
+        return friends;
     }
 
-    public List<User> getCommonFriends(long userId, long friendId) {
+    public List<User> getCommonFriends(int userId, int friendId) {
         log.info("get common friends");
-        List<User> friends = getAllFriends(userId);
-        friends.retainAll(getAllFriends(friendId));
+        List<User> friends = friendStorage.getCommonFriends(userId, friendId);
         return friends;
     }
 
