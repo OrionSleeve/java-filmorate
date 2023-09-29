@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class InMemoryFriendStorage implements FriendStorage {
+public class FriendDbStorage implements FriendStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override

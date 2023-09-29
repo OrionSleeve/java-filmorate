@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.storage.LikeStorage;
 
 @Component
 @RequiredArgsConstructor
-public class InMemoryLikeStorage implements LikeStorage {
+public class LikeDbStorage implements LikeStorage {
     private final JdbcTemplate jdbcTemplate;
 
 

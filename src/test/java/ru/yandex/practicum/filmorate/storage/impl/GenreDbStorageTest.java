@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class InMemoryGenreStorageTest {
+class GenreDbStorageTest {
     private final GenreStorage genreStorage;
 
     @Test

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class InMemoryMpaStorageTest {
+class MpaDbStorageTest {
     private final MpaStorage mpaStorage;
 
     @Test

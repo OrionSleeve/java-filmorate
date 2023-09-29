@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class InMemoryFimStorageTest {
+class FimDbStorageTest {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private Film film;
