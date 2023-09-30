@@ -15,28 +15,29 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
+    public static final String SELECT_ID_SQL = "SELECT * FROM rating_mpa WHERE id = ?";
+    public static final String SELECT_ALL_SQL = "SELECT * FROM rating_mpa";
+    public static final String SELECT_NAME_SQL = "SELECT name FROM rating_mpa WHERE id = ?";
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Mpa getMpaById(int id) {
         this.isMpaExisted(id);
-        String sqlQuery = "SELECT * FROM rating_mpa WHERE id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::createMpa, id);
+        return jdbcTemplate.queryForObject(SELECT_ID_SQL, this::createMpa, id);
     }
 
     @Override
     public List<Mpa> getAllMpa() {
-        String sqlQuery = "SELECT * FROM rating_mpa";
-        return jdbcTemplate.query(sqlQuery, this::createMpa);
+        return jdbcTemplate.query(SELECT_ALL_SQL, this::createMpa);
     }
 
     @Override
-    public void isMpaExisted(int id) {
-        String sqlQuery = "SELECT name FROM rating_mpa WHERE id = ?";
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sqlQuery, id);
+    public boolean isMpaExisted(int id) {
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(SELECT_NAME_SQL, id);
         if (!sqlRowSet.next()) {
             throw new NotFoundException("Mpa id: " + id + " does not exist");
         }
+        return sqlRowSet.next();
     }
 
     private Mpa createMpa(ResultSet resultSet, int rowNum) throws SQLException {

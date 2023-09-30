@@ -21,14 +21,18 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
+    private static final String INSERT_SQL = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
+    private static final String UPDATE_SQL = "UPDATE users SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
+    private static final String SELECT_ALL_SQL = "SELECT * FROM users";
+    private static final String SELECT_BY_ID_SQL = "SELECT * FROM users WHERE id = ?";
+    private static final String SELECT_ID_SQL = "SELECT id FROM users WHERE id = ?";
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public User newUser(User user) {
-        String sqlQuery = "INSERT INTO users (email,login,name,birthday) VALUES (?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"id"});
+            PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
             ps.setString(3, user.getName());
@@ -36,19 +40,13 @@ public class UserDbStorage implements UserStorage {
             return ps;
         }, keyHolder);
         user.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-        log.info("Create users");
+        log.info("Added user with id = {}", user.getId());
         return user;
     }
 
     @Override
     public User updateUser(User user) {
-        String sqlQuery = "UPDATE users SET " +
-                "email = ?," +
-                "login = ?," +
-                "name = ?," +
-                "birthday = ?" +
-                "WHERE id = ?";
-        jdbcTemplate.update(sqlQuery,
+        jdbcTemplate.update(UPDATE_SQL,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -60,24 +58,21 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getUsers() {
-        String sqlQuery = "SELECT * FROM users";
-        log.info("Get All user");
-        return jdbcTemplate.query(sqlQuery, this::makeUser);
+        log.info("Get all users");
+        return jdbcTemplate.query(SELECT_ALL_SQL, this::makeUser);
     }
 
     @Override
     public User getUserById(int id) {
-        String sqlQuery = "SELECT * FROM users WHERE id = ?";
         log.info("Get user with id = {}", id);
-        return jdbcTemplate.queryForObject(sqlQuery, this::makeUser, id);
+        return jdbcTemplate.queryForObject(SELECT_BY_ID_SQL, this::makeUser, id);
     }
 
     @Override
     public void isUserExisted(int id) {
-        String sqlQuery = "SELECT id FROM users WHERE id = ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, id);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(SELECT_ID_SQL, id);
         if (!rowSet.next()) {
-            throw new NotFoundException("User with id= " + id + " doesn't exist");
+            throw new NotFoundException("User with id = " + id + " doesn't exist");
         }
     }
 

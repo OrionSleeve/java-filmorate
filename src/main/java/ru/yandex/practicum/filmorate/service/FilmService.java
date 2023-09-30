@@ -18,12 +18,13 @@ public class FilmService {
     private final GenreStorage genreStorage;
     private final MpaStorage mpaStorage;
     private final LikeStorage likeStorage;
+    private static final int MIN_ID = 0;
 
     public Film addFilm(Film film) {
         mpaStorage.isMpaExisted(film.getMpa().getId());
         filmStorage.addedFilm(film);
         genreStorage.createFilmGenre(film);
-        log.info("Create a film with id = {} ", film.getId());
+        log.info("Added film with id = {} ", film.getId());
         return film;
     }
 
@@ -32,14 +33,14 @@ public class FilmService {
         genreStorage.updateFilmByGenre(film);
         mpaStorage.isMpaExisted(film.getMpa().getId());
         filmStorage.updateFilm(film);
-        log.info("Update the film with id = {} ", film.getId());
+        log.info("Update film with id = {} ", film.getId());
         return film;
     }
 
     public List<Film> getFilms() {
-        log.info("GET {} films", filmStorage.getFilms().size());
         List<Film> films = filmStorage.getFilms();
         genreStorage.loadGenres(films);
+        log.info("Get {} films", filmStorage.getFilms().size());
         return films;
     }
 
@@ -57,14 +58,12 @@ public class FilmService {
         log.info("Like added to film with id = {} ", filmId);
     }
 
-    public Film removeLikes(int filmId, int userId) {
-        if (filmId < 0 || userId < 0) {
+    public void removeLikes(int filmId, int userId) {
+        if (filmId < MIN_ID || userId < MIN_ID) {
             throw new NotFoundException("negative value is not allowed");
         }
-        Film film = getFilmById(filmId);
         likeStorage.removeLike(filmId, userId);
         log.info("User with id = {} remove likes from the film id = {}", userId, filmId);
-        return film;
     }
 
     public List<Film> favoriteFilms(Integer number) {

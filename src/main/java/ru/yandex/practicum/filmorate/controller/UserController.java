@@ -9,9 +9,9 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
@@ -25,7 +25,7 @@ public class UserController {
 
     @GetMapping
     public List<User> getAllUsers() {
-        log.info("GET {} users", userService.getUsers().size());
+        log.info("Get {} users", userService.getUsers().size());
         return userService.getUsers();
     }
 
@@ -38,13 +38,13 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
-        log.info("get user by id = {}", id);
+        log.info("Get user by id = {}", id);
         return userService.getUserById(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable int id, @PathVariable int friendId) {
-        log.info("friend with id = {} {} {}", friendId, " has been added to the user with id = ", id);
+        log.info("Friend with id = {} {} {}", friendId, " has been added to the user with id = ", id);
         userService.addFriend(id, friendId);
     }
 

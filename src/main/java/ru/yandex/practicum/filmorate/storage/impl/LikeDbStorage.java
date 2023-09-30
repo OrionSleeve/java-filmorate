@@ -8,18 +8,18 @@ import ru.yandex.practicum.filmorate.storage.LikeStorage;
 @Component
 @RequiredArgsConstructor
 public class LikeDbStorage implements LikeStorage {
+    public static final String INSERT_SQL = "INSERT INTO likes (film_id, user_id) VALUES (?,?)";
+    public static final String DELETE_SQL = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
     private final JdbcTemplate jdbcTemplate;
 
 
     @Override
     public void addLike(int id, int userId) {
-        String sqlQuery = "INSERT INTO likes (film_id, user_id) VALUES (?,?)";
-        jdbcTemplate.update(sqlQuery, id, userId);
+        jdbcTemplate.update(INSERT_SQL, id, userId);
     }
 
     @Override
     public void removeLike(int id, int userId) {
-        String sqlQuery = "DELETE FROM likes WHERE film_id = ? AND user_id = ?";
-        jdbcTemplate.update(sqlQuery, id, userId);
+        jdbcTemplate.update(DELETE_SQL, id, userId);
     }
 }

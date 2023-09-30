@@ -9,5 +9,5 @@ public interface MpaStorage {
 
     List<Mpa> getAllMpa();
 
-    void isMpaExisted(int id);
+    boolean isMpaExisted(int id);
 }

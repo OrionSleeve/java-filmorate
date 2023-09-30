@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -24,14 +25,25 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
+    private static final String SQL_GET_FILMS = "SELECT f.*,  rm.name AS mpa_name FROM films AS f " +
+            "LEFT JOIN rating_mpa AS rm ON f.rating_id = rm.id";
+    private static final String UPDATE_SQL = "UPDATE films SET " + "name = ?," + "description = ?,"
+            + "release_date = ?," + "duration = ?," + "rating_id = ?" + "WHERE id = ?";
+    private static final String INSERT_SQL = "INSERT INTO films (name,description,release_date,duration,rating_id)" +
+            " VALUES (?,?,?,?,?)";
+    private static final String SELECT_ID_SQL = "SELECT f.*,  rm.name AS mpa_name FROM films AS f " +
+            "LEFT JOIN rating_mpa AS rm ON f.rating_id = rm.id WHERE f.id = ?";
+    private static final String SELECT_FAVORITE_SQL = "SELECT f.*," +
+            " rm.name AS mpa_name FROM films AS f LEFT JOIN rating_mpa AS rm ON f.rating_id = rm.id LEFT JOIN likes AS" +
+            " l ON f.id = l.film_id GROUP BY f.id ORDER BY COUNT(l.user_id) DESC LIMIT ?";
+    private static final String SELECT_EX_ID_SQL = "SELECT id FROM films WHERE id = ?";
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Film addedFilm(Film film) {
-        String sqlQuery = "INSERT INTO films (name,description,release_date,duration,rating_id) VALUES (?,?,?,?,?)";
         KeyHolder id = new GeneratedKeyHolder();
-        jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"id"});
+        int sqlInsert = jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(INSERT_SQL, new String[]{"id"});
             ps.setString(1, film.getName());
             ps.setString(2, film.getDescription());
             ps.setDate(3, java.sql.Date.valueOf(film.getReleaseDate()));
@@ -39,58 +51,57 @@ public class FilmDbStorage implements FilmStorage {
             ps.setInt(5, film.getMpa().getId());
             return ps;
         }, id);
+        if (sqlInsert != 1) {
+            throw new DataAccessException("Fail insert film to DB") {
+            };
+        }
         film.setId(Objects.requireNonNull(id.getKey()).intValue());
+        log.info("Added film with ID: {}", film.getId());
         return film;
     }
 
     @Override
     public List<Film> getFilms() {
-        String sqlQuery = "SELECT f.*,  rm.name AS mpa_name FROM films AS f "
-                + "LEFT JOIN rating_mpa AS rm ON f.rating_id = rm.id";
-        return jdbcTemplate.query(sqlQuery, this::makeFilm);
+        log.info("List of films from DB");
+        return jdbcTemplate.query(SQL_GET_FILMS, this::makeFilm);
     }
 
     @Override
     public Film updateFilm(Film film) {
-        String sqlQuery = "UPDATE films SET " + "name = ?," + "description = ?,"
-                + "release_date = ?," + "duration = ?," + "rating_id = ?" + "WHERE id = ?";
-        jdbcTemplate.update(sqlQuery, film.getName(),
+        jdbcTemplate.update(UPDATE_SQL, film.getName(),
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
                 film.getMpa().getId(),
                 film.getId());
+        log.info("Updated film with ID: {}", film.getId());
         return film;
     }
 
     @Override
     public Film getFilmById(Integer id) {
-        String sqlQuery = "SELECT f.*,  rm.name AS mpa_name FROM films AS f "
-                + "LEFT JOIN rating_mpa AS rm ON f.rating_id = rm.id WHERE f.id = ?";
-        return jdbcTemplate.queryForObject(sqlQuery, this::makeFilm, id);
+        return jdbcTemplate.queryForObject(SELECT_ID_SQL, this::makeFilm, id);
     }
 
     @Override
     public List<Film> getFavoriteFilms(int id) {
-        String sqlQuery = "SELECT f.*, rm.name AS mpa_name FROM films AS f "
-                + "LEFT JOIN rating_mpa AS rm ON f.rating_id = rm.id "
-                + "LEFT JOIN likes AS l ON f.id = l.film_id "
-                + "GROUP BY f.id ORDER BY COUNT(l.user_id) DESC LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::makeFilm, id);
+        log.info("Film with ID: {} from DB", id);
+        return jdbcTemplate.query(SELECT_FAVORITE_SQL, this::makeFilm, id);
     }
 
     @Override
     public void isFilmExisted(int id) {
-        String sqlQuery = "SELECT id FROM films WHERE id = ?";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, id);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(SELECT_EX_ID_SQL, id);
         if (!rowSet.next()) {
-            throw new NotFoundException("Film id: " + id + " does not exist");
+            throw new NotFoundException("Film with ID: " + id + " does not exists");
         }
+        log.info("Film with ID: {} exists in DB", id);
     }
 
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         Mpa mpa = new Mpa(rs.getInt("rating_id"), rs.getString("mpa_name"));
-        return new Film(rs.getInt("id"), rs.getString("name"),
+        return new Film(rs.getInt("id"),
+                rs.getString("name"),
                 rs.getString("description"),
                 rs.getDate("release_date").toLocalDate(),
                 rs.getInt("duration"), mpa, new LinkedHashSet<>());

@@ -11,11 +11,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
-@RestController
-@RequestMapping("/films")
 @Slf4j
-@RequiredArgsConstructor
 @Validated
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
 
@@ -33,19 +33,19 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getAllFilms() {
-        log.info("GET {} films", filmService.getFilms().size());
+        log.info("Get {} films", filmService.getFilms().size());
         return filmService.getFilms();
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable int id) {
-        log.info("get a film by id = {} ", id);
+        log.info("Get film by id = {} ", id);
         return filmService.getFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void addLikes(@PathVariable int id, @PathVariable int userId) {
-        log.info("user with id = {} {} {} ", userId, " added like for the film with id = ", id);
+        log.info("User with id = {} {} {} ", userId, " added like for the film with id = ", id);
         filmService.addLikes(id, userId);
     }
 

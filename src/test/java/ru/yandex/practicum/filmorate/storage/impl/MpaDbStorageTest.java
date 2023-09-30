@@ -3,24 +3,40 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.storage.MpaStorage;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class MpaDbStorageTest {
-    private final MpaStorage mpaStorage;
+    private final MpaDbStorage mpaDbStorage;
 
     @Test
-    public void getMpaByIdTest() {
-        assertEquals("PG-13", mpaStorage.getMpaById(3).getName());
+    void getMpaById() {
+        int id = 1;
+        Mpa mpa = mpaDbStorage.getMpaById(id);
+        assertEquals(mpa.getName(), "G");
     }
 
     @Test
-    public void getAllMpaTest() {
-        String mpaList = "[Mpa(id=1, name=G), Mpa(id=2, name=PG), Mpa(id=3, name=PG-13), Mpa(id=4, name=R), Mpa(id=5, name=NC-17)]";
-        assertEquals(mpaList, mpaStorage.getAllMpa().toString(), "MpaList isn't correct");
+    void getAllMpa() {
+        List<Mpa> allMpa = mpaDbStorage.getAllMpa();
+        assertEquals(allMpa.size(), 5);
+    }
+
+    @Test
+    void isMpaExisted() {
+        int id = 999;
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> mpaDbStorage.isMpaExisted(id));
+
+        assertEquals("Mpa id: 999 does not exist", exception.getMessage());
     }
 }

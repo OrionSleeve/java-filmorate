@@ -3,25 +3,79 @@ package ru.yandex.practicum.filmorate.storage.impl;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.storage.GenreStorage;
+import org.springframework.test.annotation.DirtiesContext;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.GenreService;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class GenreDbStorageTest {
-    private final GenreStorage genreStorage;
+    private final GenreService genreService;
+    private final FilmService filmService;
 
     @Test
-    public void getGenreByIdTest() {
-        assertEquals("Драма", genreStorage.getGenreById(2).getName());
+    void createFilmGenre() {
+        Film film = new Film();
+        film.setName("Test Film");
+        film.setDescription("Test Description");
+        film.setReleaseDate(LocalDate.of(2012, 6, 13));
+        film.setDuration(120);
+        film.setMpa(new Mpa(3, "PG-13"));
+        film.setGenres(new LinkedHashSet<>());
+        film.getGenres().add(new Genre(1, "Комедия"));
+        filmService.addFilm(film);
+
+        assertEquals(1, filmService.getFilmById(1).getGenres().size());
     }
 
     @Test
-    public void getAllGenresTest() {
-        String genreList = "[Genre(id=1, name=Комедия), Genre(id=2, name=Драма), Genre(id=3, name=Мультфильм), " +
-                "Genre(id=4, name=Триллер), Genre(id=5, name=Документальный), Genre(id=6, name=Боевик)]";
-        assertEquals(genreList, genreStorage.getAllGenres().toString(), "MpaList isn't correct");
+    void getGenreById() {
+        Film film = new Film();
+        film.setName("Test Film");
+        film.setDescription("Test Description");
+        film.setReleaseDate(LocalDate.of(2012, 6, 13));
+        film.setDuration(120);
+        film.setMpa(new Mpa(3, "PG-13"));
+        film.setGenres(new LinkedHashSet<>());
+        film.getGenres().add(new Genre(1, "Комедия"));
+        filmService.addFilm(film);
+
+        assertEquals(genreService.getGenreById(1).getName(), "Комедия");
+    }
+
+    @Test
+    void getAllGenres() {
+        List<Genre> genre = genreService.getAllGenres();
+        assertEquals(6, genre.size());
+    }
+
+    @Test
+    void updateFilmByGenre() {
+        Film film = new Film();
+        film.setName("Test Film");
+        film.setDescription("Test Description");
+        film.setReleaseDate(LocalDate.of(2012, 6, 13));
+        film.setDuration(120);
+        film.setMpa(new Mpa(3, "PG-13"));
+        film.setGenres(new LinkedHashSet<>());
+        film.getGenres().add(new Genre(2, "Драма"));
+        filmService.addFilm(film);
+        film.getGenres().add(new Genre(1, "Комедия"));
+        filmService.updateFilm(film);
+
+        assertEquals(filmService.getFilmById(1).getGenres().size(), 2);
     }
 }

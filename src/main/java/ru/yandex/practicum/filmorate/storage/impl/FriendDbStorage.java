@@ -17,28 +17,30 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class FriendDbStorage implements FriendStorage {
+    private static final String INSERT_SQL = "INSERT INTO friendship (user_id, friend_user_id) VALUES (?,?)";
+    public static final String DELETE_SQL = "DELETE FROM friendship WHERE user_id = ? AND friend_user_id = ?";
+    public static final String SELECT_COMMON_FRIEND_SQL = "SELECT * FROM users WHERE id IN" +
+            " (SELECT friend_user_id FROM friendship WHERE user_id = ?)" +
+            " AND id IN (SELECT friend_user_id FROM friendship WHERE user_id = ?)";
+    public static final String SELECT_ALL_FRIENDS_SQL = "SELECT * FROM users WHERE id IN" +
+            " (SELECT friend_user_id AS id FROM friendship WHERE user_id = ?)";
     private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void addAsFriend(int id, int idFriend) {
-        String sqlQuery = "INSERT INTO friendship (user_id, friend_user_id) VALUES (?,?)";
         log.info("Add friend with id = {} to user with id = {}", idFriend, id);
-        jdbcTemplate.update(sqlQuery, id, idFriend);
+        jdbcTemplate.update(INSERT_SQL, id, idFriend);
     }
 
     @Override
     public void deleteFriend(int id, int idFriend) {
-        String sqlQuery = "DELETE FROM friendship WHERE user_id = ? AND friend_user_id = ?";
         log.info("Delete friend with id = {} to user with id = {}", idFriend, id);
-        jdbcTemplate.update(sqlQuery, id, idFriend);
+        jdbcTemplate.update(DELETE_SQL, id, idFriend);
     }
 
     @Override
     public List<User> getCommonFriends(int id, int idFriend) {
-        String sqlQuery = "SELECT * FROM users " +
-                "WHERE id IN (SELECT friend_user_id FROM friendship WHERE user_id = ?)" +
-                "AND id IN (SELECT friend_user_id FROM friendship WHERE user_id = ?)";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, id, idFriend);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(SELECT_COMMON_FRIEND_SQL, id, idFriend);
         List<User> commonFriends = new ArrayList<>();
         while (rowSet.next()) {
             commonFriends.add(new User(rowSet.getInt("id"),
@@ -53,9 +55,7 @@ public class FriendDbStorage implements FriendStorage {
 
     @Override
     public List<User> getAllFriends(int id) {
-        String sqlQuery = "SELECT * FROM users WHERE id IN " +
-                "(SELECT friend_user_id AS id FROM friendship WHERE user_id = ?)";
-        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlQuery, id);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(SELECT_ALL_FRIENDS_SQL, id);
         List<User> friends = new ArrayList<>();
         while (rowSet.next()) {
             friends.add(new User(rowSet.getInt("id"),

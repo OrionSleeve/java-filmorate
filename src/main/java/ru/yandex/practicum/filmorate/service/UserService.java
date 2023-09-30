@@ -50,21 +50,22 @@ public class UserService {
     }
 
     public void removeFriendById(int id, int friendId) {
-        User user = getUserById(id);
-        log.info("friend with id = {}{}{}", friendId, " has been removed to the user with id = ", id);
         friendStorage.deleteFriend(id, friendId);
+        log.info("Friend with id = {}{}{}", friendId, " has been removed to the user with id = ", id);
     }
 
     public List<User> getAllFriends(int id) {
         List<User> friends = friendStorage.getAllFriends(id);
-        log.info("get all friends");
+        log.info("Get all friends");
         return friends;
     }
 
-    public List<User> getCommonFriends(int userId, int friendId) {
-        log.info("get common friends");
-        List<User> friends = friendStorage.getCommonFriends(userId, friendId);
-        return friends;
+    public List<User> getCommonFriends(Integer userId, Integer friendId) {
+        if (userId == null || friendId == null) {
+            throw new IllegalArgumentException("id cannot be null");
+        }
+        log.info("Get common friends");
+        return friendStorage.getCommonFriends(userId, friendId);
     }
 
     public void validUser(User user) {
