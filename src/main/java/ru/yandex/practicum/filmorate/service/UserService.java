@@ -56,15 +56,12 @@ public class UserService {
 
     public List<User> getAllFriends(int id) {
         List<User> friends = friendStorage.getAllFriends(id);
-        log.info("Get all friends");
+        log.info("Get all friends for user with id: {}", id);
         return friends;
     }
 
     public List<User> getCommonFriends(Integer userId, Integer friendId) {
-        if (userId == null || friendId == null) {
-            throw new IllegalArgumentException("id cannot be null");
-        }
-        log.info("Get common friends");
+        log.info("Get common friends for users with id: {} and {}", userId, friendId);
         return friendStorage.getCommonFriends(userId, friendId);
     }
 

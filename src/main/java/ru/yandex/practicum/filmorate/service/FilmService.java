@@ -40,7 +40,7 @@ public class FilmService {
     public List<Film> getFilms() {
         List<Film> films = filmStorage.getFilms();
         genreStorage.loadGenres(films);
-        log.info("Get {} films", filmStorage.getFilms().size());
+        log.info("Get {} films", films.size());
         return films;
     }
 
@@ -48,6 +48,7 @@ public class FilmService {
         filmStorage.isFilmExisted(filmId);
         Film film = filmStorage.getFilmById(filmId);
         genreStorage.loadGenres(List.of(film));
+        log.info("Get film by id = {}", filmId);
         return film;
     }
 

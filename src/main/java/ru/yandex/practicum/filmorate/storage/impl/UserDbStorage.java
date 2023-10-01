@@ -58,8 +58,9 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getUsers() {
-        log.info("Get all users");
-        return jdbcTemplate.query(SELECT_ALL_SQL, this::makeUser);
+        List<User> userList = jdbcTemplate.query(SELECT_ALL_SQL, this::makeUser);
+        log.info("Retrieved {} users", userList.size());
+        return userList;
     }
 
     @Override

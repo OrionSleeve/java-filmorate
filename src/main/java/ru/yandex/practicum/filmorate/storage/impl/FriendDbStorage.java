@@ -49,7 +49,7 @@ public class FriendDbStorage implements FriendStorage {
                     rowSet.getString("name"),
                     Objects.requireNonNull(rowSet.getDate("birthday")).toLocalDate()));
         }
-        log.info("Get common friends");
+        log.info("Retrieved {} common friends", commonFriends.size());
         return commonFriends.stream().distinct().collect(Collectors.toList());
     }
 

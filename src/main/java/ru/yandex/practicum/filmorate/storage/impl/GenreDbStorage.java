@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.DataException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -60,26 +61,31 @@ public class GenreDbStorage implements GenreStorage {
                     return film.getGenres().size();
                 }
             });
+            log.info("Created {} film genre", film.getGenres().size());
         } catch (DataAccessException ex) {
-            log.error("Error film genre: " + ex.getMessage(), ex);
+            log.error("Error creating film genre: {} " + ex.getMessage(), ex.getMessage(), ex);
         }
     }
 
     @Override
     public Genre getGenreById(int id) {
         this.isGenreExisted(id);
+        log.info("Retrieved genre by id: {}", id);
         return jdbcTemplate.queryForObject(SELECT_ID_SQL, this::createGenre, id);
     }
 
     @Override
     public List<Genre> getAllGenres() {
-        return jdbcTemplate.query(SELECT_GENRE_SQL, this::createGenre);
+        List<Genre> genres = jdbcTemplate.query(SELECT_GENRE_SQL, this::createGenre);
+        log.info("Get {} genres from DB", genres.size());
+        return genres;
     }
 
     @Override
     public void updateFilmByGenre(Film film) {
         jdbcTemplate.update(DELETE_GENRE_SQL, film.getId());
         this.createFilmGenre(film);
+        log.info("Film {} updated by genre", film.getId());
     }
 
 
@@ -107,8 +113,8 @@ public class GenreDbStorage implements GenreStorage {
                 }
             }, films.stream().map(Film::getId).toArray());
         } catch (DataAccessException ex) {
-            log.info("Load genre is Fail");
-            throw new RuntimeException("Error from load genre", ex);
+            log.info("Load genre is Fail: {}", ex.getMessage());
+            throw new DataException("Error from load genre", ex);
         }
     }
 

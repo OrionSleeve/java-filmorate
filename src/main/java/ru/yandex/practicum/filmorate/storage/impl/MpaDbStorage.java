@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
@@ -23,12 +25,15 @@ public class MpaDbStorage implements MpaStorage {
     @Override
     public Mpa getMpaById(int id) {
         this.isMpaExisted(id);
+        log.info("Retrieved Mpa with id {}", id);
         return jdbcTemplate.queryForObject(SELECT_ID_SQL, this::createMpa, id);
     }
 
     @Override
     public List<Mpa> getAllMpa() {
-        return jdbcTemplate.query(SELECT_ALL_SQL, this::createMpa);
+        List<Mpa> mpaList = jdbcTemplate.query(SELECT_ALL_SQL, this::createMpa);
+        log.info("Retrieved {} Mpa", mpaList.size());
+        return mpaList;
     }
 
     @Override

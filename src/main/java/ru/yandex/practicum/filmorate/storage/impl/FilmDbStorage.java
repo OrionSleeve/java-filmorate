@@ -56,13 +56,14 @@ public class FilmDbStorage implements FilmStorage {
             };
         }
         film.setId(Objects.requireNonNull(id.getKey()).intValue());
-        log.info("Added film with ID: {}", film.getId());
+        log.info("Added film with id: {}", film.getId());
         return film;
     }
 
     @Override
     public List<Film> getFilms() {
-        log.info("List of films from DB");
+        log.info("List of {} films from DB",
+                jdbcTemplate.queryForObject("SELECT COUNT (*) FROM FILMS", Integer.class));
         return jdbcTemplate.query(SQL_GET_FILMS, this::makeFilm);
     }
 
@@ -93,9 +94,9 @@ public class FilmDbStorage implements FilmStorage {
     public void isFilmExisted(int id) {
         SqlRowSet rowSet = jdbcTemplate.queryForRowSet(SELECT_EX_ID_SQL, id);
         if (!rowSet.next()) {
-            throw new NotFoundException("Film with ID: " + id + " does not exists");
+            throw new NotFoundException("Film with id: " + id + " does not exists");
         }
-        log.info("Film with ID: {} exists in DB", id);
+        log.info("Film with id: {} exists in DB", id);
     }
 
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
