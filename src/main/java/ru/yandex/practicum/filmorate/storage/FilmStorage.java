@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface FilmStorage {
     Film addedFilm(Film film);
@@ -12,5 +11,9 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    Optional<Film> getFilmById(Integer id);
+    Film getFilmById(Integer id);
+
+    List<Film> getFavoriteFilms(int id);
+
+    void isFilmExisted(int id);
 }
